@@ -1,4 +1,5 @@
 ## 1. Настройка процессора и управления частотой
+
 ### Глубокое отключение энергосберегающих функций  
 В BIOS/UEFI отключаем:
 ```text
@@ -48,6 +49,7 @@ watch -n 1 'cat /proc/cpuinfo | grep "MHz" && sensors | grep Core'
 ```
 
 ## 2. Продвинутая привязка процессов и изоляция ядер
+
 ### Детальная стратегия изоляции
 Для системы с 2x Xeon Gold 6248 (20 ядер/40 потоков на сокет):  
 
@@ -73,6 +75,7 @@ GRUB_CMDLINE_LINUX="... isolcpus=10-19,30-39 nohz_full=10-19,30-39 rcu_nocbs=10-
 sudo update-grub2
 sudo reboot
 ```
+
 ### Привязка системных процессов  
 Привязываем systemd и системные процессы к системным ядрам
 ```bash
@@ -88,8 +91,8 @@ done
 ```
 
 ## 3. Детальная настройка прерываний (IRQ)
-Полное управление IRQ балансировкой  
 
+### Полное управление IRQ балансировкой  
 Отключаем автоматическую балансировку
 ```bash
 sudo systemctl stop irqbalance
@@ -143,7 +146,7 @@ sudo chmod +x /usr/local/bin/irq_affinity.sh
 
 ## 4. Продвинутый тюнинг sysctl параметров
 
-Сетевой стек - оптимизация для 100GbE  
+### Сетевой стек - оптимизация для 100GbE  
 Создаем /etc/sysctl.d/99-highperf.conf:
 ```bash
 # ===== БАЗОВЫЕ НАСТРОЙКИ СЕТИ =====
@@ -204,7 +207,8 @@ fs.aio-max-nr = 1048576
 ```
 
 ## 5. NUMA оптимизация - глубокое погружение  
-Анализ топологии NUMA
+
+### Анализ топологии NUMA
 ```bash
 #!/bin/bash
 # numa_analysis.sh - детальный анализ NUMA топологии
@@ -231,7 +235,8 @@ for device in /sys/bus/pci/devices/*; do
     fi
 done
 ```
-Оптимизация памяти для NUMA  
+
+### Оптимизация памяти для NUMA  
 Принудительное распределение памяти
 ```bash
 echo 0 | sudo tee /proc/sys/vm/zone_reclaim_mode
@@ -249,7 +254,8 @@ echo 1024 | sudo tee /sys/devices/system/node/node1/hugepages/hugepages-2048kB/n
 ```
 
 ## 6. Новые методики оптимизации  
-Оптимизация подсистемы ввода-вывода  
+
+### Оптимизация подсистемы ввода-вывода  
 Тюнинг I/O scheduler и queue depth:
 ```bash
 # Для NVMe дисков
@@ -266,7 +272,8 @@ echo 128 > /sys/block/sda/queue/read_ahead_kb
 echo 1048576 > /proc/sys/fs/aio-max-nr
 echo 65536 > /proc/sys/fs/aio-nr
 ```
-#### Оптимизация сетевого стека для zero-copy
+
+### Оптимизация сетевого стека для zero-copy
 Включение zero-copy для сетевых операций
 ```bash
 echo 1 > /proc/sys/net/core/busy_poll
@@ -281,14 +288,12 @@ ethtool -K ens1f1 tso on gso on gro on lro off
 ethtool -C ens1f0 rx-usecs 0 rx-frames 0
 ethtool -C ens1f1 rx-usecs 0 rx-frames 0
 ```
-#### Мониторинг и профилирование производительности
-Установка и настройка продвинутых инструментов:  
-
+### Мониторинг и профилирование производительности
 Установка необходимых пакетов
 ```bash
 sudo apt-get install -y perf iperf3 sysstat nicstat numactl bpftrace
 ```
-# Постоянный мониторинг производительности
+Постоянный мониторинг производительности
 sudo tee /usr/local/bin/perf_monitor.sh << 'EOF'
 #!/bin/bash
 while true; do
@@ -308,31 +313,37 @@ while true; do
     sleep 2
 done
 EOF
-Оптимизация памяти и huge pages
-bash
-# Динамическое управление huge pages
+
+### Оптимизация памяти и huge pages
+Динамическое управление huge pages
+```bash
 echo 'vm.nr_overcommit_hugepages = 512' >> /etc/sysctl.conf
 echo 'vm.hugetlb_shm_group = 0' >> /etc/sysctl.conf
-
-# Pre-allocation 1GB huge pages (если поддерживается)
+```
+Pre-allocation 1GB huge pages (если поддерживается)
+```bash
 echo 4 > /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
-
-# Настройка transparent huge pages (отключаем для детерминизма)
+```
+Настройка transparent huge pages (отключаем для детерминизма)
+```bash
 echo never > /sys/kernel/mm/transparent_hugepage/enabled
 echo never > /sys/kernel/mm/transparent_hugepage/defrag
-Security vs Performance баланс
-bash
-# Отключаем security features, влияющие на производительность
+```
+### Security vs Performance баланс
+Отключаем security features, влияющие на производительность
+```bash
 echo 0 > /proc/sys/kernel/randomize_va_space
 echo 0 > /proc/sys/kernel/kptr_restrict
-
-# Настройка SELinux/AppArmor для минимального overhead
+```
+Настройка SELinux/AppArmor для минимального overhead
+```bash
 sudo setenforce 0
 echo 'kernel.randomize_va_space = 0' >> /etc/sysctl.conf
-Контейнерная оптимизация
-Настройка Docker для высоких нагрузок:
+```
 
-json
+### Контейнерная оптимизация
+Настройка Docker для высоких нагрузок:
+```json
 {
   "data-root": "/opt/containers/docker",
   "storage-driver": "overlay2",
@@ -353,25 +364,30 @@ json
   "cpu-rt-runtime": 950000,
   "cpu-rt-period": 1000000
 }
-Power management тюнинг
-bash
-# Принудительное включение максимальной производительности
+```
+### Power management тюнинг
+Принудительное включение максимальной производительности
+```bash
 echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-
-# Отключение управления питанием PCIe
+```
+Отключение управления питанием PCIe
+```bash
 for device in /sys/bus/pci/devices/*; do
     echo performance | sudo tee $device/power/control 2>/dev/null
 done
-
-# Управление питанием дисков
+```
+Управление питанием дисков
+```bash
 for disk in /sys/block/sd*; do
     echo 0 | sudo tee $disk/queue/iosched/slice_idle 2>/dev/null
     echo 0 | sudo tee $disk/queue/rotational 2>/dev/null
 done
+```
 
 ## 7. Автоматизация и валидация
-Скрипт автоматической проверки оптимизаций
-bash
+
+### Скрипт автоматической проверки оптимизаций
+```bash
 #!/bin/bash
 # validate_optimizations.sh
 
@@ -409,3 +425,4 @@ validate_optimization "Isolated CPUs" "10-19,30-39" \
 validate_optimization "Huge Pages" "never" \
     $(cat /sys/kernel/mm/transparent_hugepage/enabled | awk -F'[\\[\\]]' '{print $2}') \
     "Transparent Huge Pages"
+```
