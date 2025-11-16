@@ -1,5 +1,5 @@
 ## 1. Настройка процессора и управления частотой
-Глубокое отключение энергосберегающих функций  
+### Глубокое отключение энергосберегающих функций  
 В BIOS/UEFI отключаем:
 ```text
 - Intel Turbo Boost Technology → Disabled
@@ -32,8 +32,7 @@ sudo cpupower frequency-set -d 2.4GHz -u 2.4GHz --min 2.4GHz --max 2.4GHz
 ```bash
 cpupower frequency-info
 ```
-Мониторинг thermal и power
-
+### Мониторинг thermal и power
 Установка утилит мониторинга
 ```bash
 sudo apt-get install lm-sensors powertop
