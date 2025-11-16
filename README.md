@@ -36,6 +36,7 @@ sudo cpupower frequency-set -d 2.4GHz -u 2.4GHz --min 2.4GHz --max 2.4GHz
 ```bash
 cpupower frequency-info
 ```
+
 ### Мониторинг thermal и power
 Установка утилит мониторинга
 ```bash
@@ -51,7 +52,7 @@ sudo service kmod start
 watch -n 1 'cat /proc/cpuinfo | grep "MHz" && sensors | grep Core'
 ```
 
-## 2. Продвинутая привязка процессов и изоляция ядер
+## 2. Привязка процессов к ядрам и изоляция
 
 ### Детальная стратегия изоляции
 Для системы с 2x Xeon Gold 6248 (20 ядер/40 потоков на сокет):  
