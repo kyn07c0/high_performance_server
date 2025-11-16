@@ -267,26 +267,28 @@ echo 128 > /sys/block/sda/queue/read_ahead_kb
 echo 1048576 > /proc/sys/fs/aio-max-nr
 echo 65536 > /proc/sys/fs/aio-nr
 ```
-Оптимизация сетевого стека для zero-copy
-bash
-# Включение zero-copy для сетевых операций
+#### Оптимизация сетевого стека для zero-copy
+Включение zero-copy для сетевых операций
+```bash
 echo 1 > /proc/sys/net/core/busy_poll
 echo 50 > /proc/sys/net/core/busy_read
-
-# Настройка сетевых карт для максимальной производительности
+```
+Настройка сетевых карт для максимальной производительности
+```bash
 ethtool -G ens1f0 rx 4096 tx 4096
 ethtool -G ens1f1 rx 4096 tx 4096
 ethtool -K ens1f0 tso on gso on gro on lro off
 ethtool -K ens1f1 tso on gso on gro on lro off
 ethtool -C ens1f0 rx-usecs 0 rx-frames 0
 ethtool -C ens1f1 rx-usecs 0 rx-frames 0
-Мониторинг и профилирование производительности
-Установка и настройка продвинутых инструментов:
+```
+#### Мониторинг и профилирование производительности
+Установка и настройка продвинутых инструментов:  
 
-bash
-# Установка необходимых пакетов
+Установка необходимых пакетов
+```bash
 sudo apt-get install -y perf iperf3 sysstat nicstat numactl bpftrace
-
+```
 # Постоянный мониторинг производительности
 sudo tee /usr/local/bin/perf_monitor.sh << 'EOF'
 #!/bin/bash
