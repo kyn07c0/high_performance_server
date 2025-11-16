@@ -48,7 +48,7 @@ sudo service kmod start
 watch -n 1 'cat /proc/cpuinfo | grep "MHz" && sensors | grep Core'
 ```
 
-### 2. Продвинутая привязка процессов и изоляция ядер
+## 2. Продвинутая привязка процессов и изоляция ядер
 Детальная стратегия изоляции
 Для системы с 2x Xeon Gold 6248 (20 ядер/40 потоков на сокет):  
 
@@ -88,7 +88,7 @@ for i in $(pgrep kthread); do
 done
 ```
 
-### 3. Детальная настройка прерываний (IRQ)
+## 3. Детальная настройка прерываний (IRQ)
 Полное управление IRQ балансировкой  
 
 Отключаем автоматическую балансировку
@@ -142,7 +142,7 @@ EOF
 sudo chmod +x /usr/local/bin/irq_affinity.sh
 ```
 
-### 4. Продвинутый тюнинг sysctl параметров
+## 4. Продвинутый тюнинг sysctl параметров
 
 Сетевой стек - оптимизация для 100GbE  
 Создаем /etc/sysctl.d/99-highperf.conf:
@@ -204,7 +204,7 @@ fs.file-max = 5000000
 fs.aio-max-nr = 1048576
 ```
 
-### 5. NUMA оптимизация - глубокое погружение  
+## 5. NUMA оптимизация - глубокое погружение  
 Анализ топологии NUMA
 ```bash
 #!/bin/bash
@@ -249,7 +249,7 @@ echo 1024 | sudo tee /sys/devices/system/node/node0/hugepages/hugepages-2048kB/n
 echo 1024 | sudo tee /sys/devices/system/node/node1/hugepages/hugepages-2048kB/nr_hugepages
 ```
 
-### 6. Новые методики оптимизации  
+## 6. Новые методики оптимизации  
 Оптимизация подсистемы ввода-вывода  
 Тюнинг I/O scheduler и queue depth:
 ```bash
@@ -370,7 +370,7 @@ for disk in /sys/block/sd*; do
     echo 0 | sudo tee $disk/queue/rotational 2>/dev/null
 done
 
-### 7. Автоматизация и валидация
+## 7. Автоматизация и валидация
 Скрипт автоматической проверки оптимизаций
 bash
 #!/bin/bash
