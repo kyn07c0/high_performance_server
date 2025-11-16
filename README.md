@@ -41,7 +41,8 @@ sudo service kmod start
 
 # Постоянный мониторинг
 watch -n 1 'cat /proc/cpuinfo | grep "MHz" && sensors | grep Core'
-2. Продвинутая привязка процессов и изоляция ядер
+
+### 2. Продвинутая привязка процессов и изоляция ядер
 Детальная стратегия изоляции
 Для системы с 2x Xeon Gold 6248 (20 ядер/40 потоков на сокет):
 
@@ -77,7 +78,8 @@ sudo systemctl set-property init.scope AllowedCPUs=0-5,20-25
 for i in $(pgrep kthread); do
     taskset -cp 0-5,20-25 $i > /dev/null 2>&1
 done
-3. Детальная настройка прерываний (IRQ)
+
+### 3. Детальная настройка прерываний (IRQ)
 Полное управление IRQ балансировкой
 bash
 # Отключаем автоматическую балансировку
@@ -127,7 +129,8 @@ done
 EOF
 
 sudo chmod +x /usr/local/bin/irq_affinity.sh
-4. Продвинутый тюнинг sysctl параметров
+
+### 4. Продвинутый тюнинг sysctl параметров
 Сетевой стек - оптимизация для 100GbE
 Создаем /etc/sysctl.d/99-highperf.conf:
 
@@ -187,7 +190,8 @@ vm.nr_hugepages = 1024
 # ===== ФАЙЛОВАЯ СИСТЕМА =====
 fs.file-max = 5000000
 fs.aio-max-nr = 1048576
-5. NUMA оптимизация - глубокое погружение
+
+### 5. NUMA оптимизация - глубокое погружение
 Анализ топологии NUMA
 bash
 #!/bin/bash
@@ -227,7 +231,8 @@ numactl --cpunodebind=0 --membind=0 --interleave=0 \
 # Pre-allocation огромных страниц для нужд приложения
 echo 1024 | sudo tee /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 echo 1024 | sudo tee /sys/devices/system/node/node1/hugepages/hugepages-2048kB/nr_hugepages
-6. Новые методики оптимизации
+
+### 6. Новые методики оптимизации
 Оптимизация подсистемы ввода-вывода
 Тюнинг I/O scheduler и queue depth:
 
@@ -345,7 +350,8 @@ for disk in /sys/block/sd*; do
     echo 0 | sudo tee $disk/queue/iosched/slice_idle 2>/dev/null
     echo 0 | sudo tee $disk/queue/rotational 2>/dev/null
 done
-7. Автоматизация и валидация
+
+### 7. Автоматизация и валидация
 Скрипт автоматической проверки оптимизаций
 bash
 #!/bin/bash
