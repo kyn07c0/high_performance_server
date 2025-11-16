@@ -10,21 +10,24 @@
 - P-States → Disabled
 ```
 
-В Linux дополнительно:
+В Linux дополнительно:  
 
-bash
-# Полное отключение всех состояний C-State кроме C0/C1
+Полное отключение всех состояний C-State кроме C0/C1
+```bash
 echo 1 | sudo tee /sys/devices/system/cpu/cpu*/cpuidle/state*/disable
-
-# Отключение P-States для максимальной стабильности частоты
+```
+Отключение P-States для максимальной стабильности частоты
+```bash
 echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-
-# Запрет на автоматическое управление частотой
+```
+Запрет на автоматическое управление частотой
+```bash
 echo 0 | sudo tee /sys/devices/system/cpu/intel_pstate/status
-
-# Фиксируем частоту через cpupower (пример для Xeon Gold 6248)
+```
+Фиксируем частоту через cpupower (пример для Xeon Gold 6248)
+```bash
 sudo cpupower frequency-set -d 2.4GHz -u 2.4GHz --min 2.4GHz --max 2.4GHz
-
+```
 # Проверяем результат
 cpupower frequency-info
 Мониторинг thermal и power
