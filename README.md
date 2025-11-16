@@ -28,19 +28,25 @@ echo 0 | sudo tee /sys/devices/system/cpu/intel_pstate/status
 ```bash
 sudo cpupower frequency-set -d 2.4GHz -u 2.4GHz --min 2.4GHz --max 2.4GHz
 ```
-# Проверяем результат
+Проверяем результат
+```bash
 cpupower frequency-info
+```
 Мониторинг thermal и power
-bash
-# Установка утилит мониторинга
-sudo apt-get install lm-sensors powertop
 
-# Настройка
+Установка утилит мониторинга
+```bash
+sudo apt-get install lm-sensors powertop
+```
+Настройка
+```bash
 sudo sensors-detect
 sudo service kmod start
-
-# Постоянный мониторинг
+```
+Постоянный мониторинг
+```bash
 watch -n 1 'cat /proc/cpuinfo | grep "MHz" && sensors | grep Core'
+```
 
 ### 2. Продвинутая привязка процессов и изоляция ядер
 Детальная стратегия изоляции
