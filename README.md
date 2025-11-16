@@ -74,26 +74,30 @@ GRUB_CMDLINE_LINUX="... isolcpus=10-19,30-39 nohz_full=10-19,30-39 rcu_nocbs=10-
 sudo update-grub2
 sudo reboot
 ```
-Привязка системных процессов
-bash
-# Привязываем systemd и системные процессы к системным ядрам
+Привязка системных процессов  
+Привязываем systemd и системные процессы к системным ядрам
+```bash
 sudo systemctl set-property user.slice AllowedCPUs=0-5,20-25
 sudo systemctl set-property system.slice AllowedCPUs=0-5,20-25
 sudo systemctl set-property init.scope AllowedCPUs=0-5,20-25
-
-# Привязываем kthreads
+```
+Привязываем kthreads
+```bash
 for i in $(pgrep kthread); do
     taskset -cp 0-5,20-25 $i > /dev/null 2>&1
 done
+```
 
 ### 3. Детальная настройка прерываний (IRQ)
-Полное управление IRQ балансировкой
-bash
-# Отключаем автоматическую балансировку
+Полное управление IRQ балансировкой  
+
+Отключаем автоматическую балансировку
+```bash
 sudo systemctl stop irqbalance
 sudo systemctl disable irqbalance
-
-# Создаем скрипт для ручного распределения IRQ
+```
+Создаем скрипт для ручного распределения IRQ
+```bash
 sudo tee /usr/local/bin/irq_affinity.sh << 'EOF'
 #!/bin/bash
 
@@ -136,12 +140,13 @@ done
 EOF
 
 sudo chmod +x /usr/local/bin/irq_affinity.sh
+```
 
 ### 4. Продвинутый тюнинг sysctl параметров
-Сетевой стек - оптимизация для 100GbE
-Создаем /etc/sysctl.d/99-highperf.conf:
 
-bash
+Сетевой стек - оптимизация для 100GbE  
+Создаем /etc/sysctl.d/99-highperf.conf:
+```bash
 # ===== БАЗОВЫЕ НАСТРОЙКИ СЕТИ =====
 # Увеличиваем максимальное количество соединений
 net.core.somaxconn = 65536
@@ -197,10 +202,11 @@ vm.nr_hugepages = 1024
 # ===== ФАЙЛОВАЯ СИСТЕМА =====
 fs.file-max = 5000000
 fs.aio-max-nr = 1048576
+```
 
-### 5. NUMA оптимизация - глубокое погружение
+### 5. NUMA оптимизация - глубокое погружение  
 Анализ топологии NUMA
-bash
+```bash
 #!/bin/bash
 # numa_analysis.sh - детальный анализ NUMA топологии
 
@@ -225,25 +231,28 @@ for device in /sys/bus/pci/devices/*; do
         echo "PCI $device_name -> NUMA Node $numa_node"
     fi
 done
-Оптимизация памяти для NUMA
-bash
-# Принудительное распределение памяти
+```
+Оптимизация памяти для NUMA  
+Принудительное распределение памяти
+```bash
 echo 0 | sudo tee /proc/sys/vm/zone_reclaim_mode
-
-# Запуск приложения с оптимальными NUMA настройками
+```
+Запуск приложения с оптимальными NUMA настройками
+```bash
 numactl --cpunodebind=0 --membind=0 --interleave=0 \
         --physcpubind=10-19,30-39 \
         /path/to/application
-
-# Pre-allocation огромных страниц для нужд приложения
+```
+Pre-allocation огромных страниц для нужд приложения
+```bash
 echo 1024 | sudo tee /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 echo 1024 | sudo tee /sys/devices/system/node/node1/hugepages/hugepages-2048kB/nr_hugepages
+```
 
-### 6. Новые методики оптимизации
-Оптимизация подсистемы ввода-вывода
+### 6. Новые методики оптимизации  
+Оптимизация подсистемы ввода-вывода  
 Тюнинг I/O scheduler и queue depth:
-
-bash
+```bash
 # Для NVMe дисков
 echo 0 > /sys/block/nvme0n1/queue/nomerges
 echo 1024 > /sys/block/nvme0n1/queue/nr_requests
@@ -257,6 +266,7 @@ echo 128 > /sys/block/sda/queue/read_ahead_kb
 # Увеличиваем лимиты AIO
 echo 1048576 > /proc/sys/fs/aio-max-nr
 echo 65536 > /proc/sys/fs/aio-nr
+```
 Оптимизация сетевого стека для zero-copy
 bash
 # Включение zero-copy для сетевых операций
