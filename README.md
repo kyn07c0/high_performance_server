@@ -48,7 +48,7 @@ watch -n 1 'cat /proc/cpuinfo | grep "MHz" && sensors | grep Core'
 ```
 
 ## 2. Продвинутая привязка процессов и изоляция ядер
-Детальная стратегия изоляции
+### Детальная стратегия изоляции
 Для системы с 2x Xeon Gold 6248 (20 ядер/40 потоков на сокет):  
 
 Топология системы
@@ -63,7 +63,7 @@ numactl -H
 - Ядра 26-29: Сетевые прерывания (нода 1)
 - Ядра 30-39: Резерв или второе приложение (нода 1)
 
-Изоляция через ядро Linux
+### Изоляция через ядро Linux
 В /etc/default/grub:
 ```bash
 GRUB_CMDLINE_LINUX="... isolcpus=10-19,30-39 nohz_full=10-19,30-39 rcu_nocbs=10-19,30-39"
@@ -73,7 +73,7 @@ GRUB_CMDLINE_LINUX="... isolcpus=10-19,30-39 nohz_full=10-19,30-39 rcu_nocbs=10-
 sudo update-grub2
 sudo reboot
 ```
-Привязка системных процессов  
+### Привязка системных процессов  
 Привязываем systemd и системные процессы к системным ядрам
 ```bash
 sudo systemctl set-property user.slice AllowedCPUs=0-5,20-25
