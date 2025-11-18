@@ -298,6 +298,7 @@ ethtool -C ens1f1 rx-usecs 0 rx-frames 0
 sudo apt-get install -y perf iperf3 sysstat nicstat numactl bpftrace
 ```
 Постоянный мониторинг производительности
+```bash
 sudo tee /usr/local/bin/perf_monitor.sh << 'EOF'
 #!/bin/bash
 while true; do
@@ -317,6 +318,7 @@ while true; do
     sleep 2
 done
 EOF
+```
 
 ### Оптимизация памяти и huge pages
 Динамическое управление huge pages
