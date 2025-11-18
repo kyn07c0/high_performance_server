@@ -148,7 +148,7 @@ EOF
 sudo chmod +x /usr/local/bin/irq_affinity.sh
 ```
 
-## 4. Продвинутый тюнинг sysctl параметров
+## 4. Тюнинг sysctl параметров
 
 ### Сетевой стек - оптимизация для 100GbE  
 Создаем /etc/sysctl.d/99-highperf.conf:
